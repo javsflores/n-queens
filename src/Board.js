@@ -141,12 +141,49 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
+      if (majorDiagonalColumnIndexAtFirstRow < 0) {
+        var row = Math.abs(majorDiagonalColumnIndexAtFirstRow);
+        var column = 0;
+      } else {
+        var row = 0;
+        var column = majorDiagonalColumnIndexAtFirstRow;
+      }
+
+      var result = [];
+      var counter = row;
+
+      for (var i = 0; i < this.rows().length - counter; i++) {
+        if (this.rows()[row][column] === 1) {
+          result.push(1);
+        }
+        row++;
+        column++;
+        if (result.length > 1) {
+          return true;
+        }
+      }
       return false; // fixme
+      ///////////////////////////
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
+      // hasMajorDiagonalConflictAt(_getFirstRowColumnIndexForMajorDiagonalOn(0, -3)) to (0, 3)
+      // console.log('testing for: ', this);
+      let range = this.rows().length;
+      let minColIndex = -1 * (range - 1);
+      let maxColIndex = range - 1;
+      for (let i = minColIndex; i <= maxColIndex; i++) {
+        if (this.hasMajorDiagonalConflictAt(this._getFirstRowColumnIndexForMajorDiagonalOn(0, i))) {
+          // flag = true;
+          return true;
+        }
+      }
+      // if (flag === false) {
+      //   debugger;
+      // }
       return false; // fixme
+      /////////////////////////////////////// paste below //////////
     },
 
 
@@ -156,11 +193,38 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
+      let startRow = 0;
+      let startCol = minorDiagonalColumnIndexAtFirstRow;
+      let max = this.rows().length - 1;
+      let valuesToCheck = [];
+      while (startCol >= 0 && startRow <= max) {
+        if (startCol <= max && startRow <= max) {
+          valuesToCheck.push([startCol, startRow]);
+        }
+        startCol--;
+        startRow++;
+      }
+      let sum = 0;
+      for (let value of valuesToCheck) {
+        sum += this.rows()[value[0]][value[1]];
+      }
+      if (sum > 1) {
+        return true;
+      }
       return false; // fixme
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+      let range = this.rows().length;
+      let minColIndex = 1;
+      let maxColIndex = (range - 1) * 2;
+      for (let i = minColIndex; i <= maxColIndex; i++) {
+        if (this.hasMinorDiagonalConflictAt(this._getFirstRowColumnIndexForMinorDiagonalOn(0, i))) {
+          // flag = true;
+          return true;
+        }
+      }
       return false; // fixme
     }
 
